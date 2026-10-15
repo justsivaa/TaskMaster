@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Build output (installers, portable exe, unpacked app)
+dist/
+out/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Never commit real user data (tasks and attached files)
+TaskMasterVault/
+WorkTodoVault/
+.env

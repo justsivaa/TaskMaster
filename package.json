@@ -1,0 +1,56 @@
+{
+  "name": "task-master",
+  "productName": "Task Master",
+  "version": "1.0.0",
+  "description": "Work to-do manager with subtasks, a notepad-style details editor and a local file browser",
+  "main": "src/main.js",
+  "author": "cosmic",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/store.test.js",
+    "dist:win": "electron-builder --win portable nsis",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux AppImage"
+  },
+  "build": {
+    "appId": "com.cosmic.taskmaster",
+    "productName": "Task Master",
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "portable",
+        "nsis"
+      ],
+      "signAndEditExecutable": false,
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Office",
+      "icon": "build/icon.png"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.png"
+    },
+    "afterPack": "build/afterPack.js"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "resedit": "^3.1.0"
+  }
+}
