@@ -194,6 +194,7 @@ function startApp() {
     <div class="brand"><div class="logo"><img src="logo.png" alt=""></div><span>Task Master</span></div>
     <div id="nav"></div><div class="sp"></div>
     <div class="vault-note">${I.folder}<span>Your tasks and files are stored on this PC.</span></div>
+    <div id="nav-bottom"></div>
   </aside>
   <section class="main">
     <div class="top" id="top"></div>
@@ -211,12 +212,14 @@ function renderNav() {
     ['home', I.home, 'Pending', pending().length],
     ['completed', I.circleCheck, 'Completed', data.tasks.length - pending().length],
     ['all', I.all, 'All tasks', data.tasks.length],
-    ['files', I.folder, 'Files', totalFiles()],
-    ['settings', I.gear, 'Settings', '']
+    ['files', I.folder, 'Files', totalFiles()]
   ];
   $('#nav').innerHTML = items.map(([k, ic, l, c]) =>
     `<button class="nav ${ui.view === k ? 'active' : ''}" data-v="${k}">${ic}<span class="lbl">${l}</span>${c !== '' ? `<span class="count">${c}</span>` : ''}</button>`).join('');
-  $$('#nav .nav').forEach(b => b.onclick = () => { ui.view = b.dataset.v; ui.status = 'all'; render(); });
+  // Settings lives at the very bottom of the sidebar with its own look
+  $('#nav-bottom').innerHTML = `<button class="setbtn ${ui.view === 'settings' ? 'active' : ''}" data-v="settings" title="Settings">
+    <span class="gear">${I.gear}</span><span class="st"><b>Settings</b><small>Theme · Data · Export</small></span><span class="arrow">${I.chev}</span></button>`;
+  $$('#nav .nav, #nav-bottom .setbtn').forEach(b => b.onclick = () => { ui.view = b.dataset.v; ui.status = 'all'; render(); });
 }
 
 function render() {
@@ -247,7 +250,7 @@ function filteredTasks() {
   const q = ui.q.trim().toLowerCase();
   if (q) list = list.filter(t => (t.title + ' ' + (t.description || '') + ' ' + (t.subtasks || []).map(s => s.title + ' ' + (s.description || '')).join(' ')).toLowerCase().includes(q));
   const cmp = {
-    due: (a, b) => (a.dueDate || '9999').localeCompare(b.dueDate || '9999') || PRIO_RANK[a.priority] - PRIO_RANK[b.priority],
+    due: (a, b) => (a.dueDate || '9999') .localeCompare(b.dueDate || '9999') || PRIO_RANK[a.priority] - PRIO_RANK[b.priority],
     created: (a, b) => b.createdAt.localeCompare(a.createdAt),
     priority: (a, b) => PRIO_RANK[a.priority] - PRIO_RANK[b.priority] || (a.dueDate || '9999').localeCompare(b.dueDate || '9999'),
     title: (a, b) => a.title.localeCompare(b.title)
@@ -260,15 +263,15 @@ function cardHtml(t) {
   const di = dueInfo(t), nf = taskFiles(t.id);
   const pct = subs.length ? Math.round(done / subs.length * 100) : 0;
   return `<div class="card p-${t.priority} ${t.status === 'done' ? 'done' : ''}" data-id="${t.id}">
-    <div class="row1"><button class="check ${t.status === 'done' ? 'on' : ''}" data-chk title="Mark ${t.status === 'done' ? 'as not done' : 'done'}">${t.status === 'done' ? I.check : ''}</button><h3>${esc(t.title)}</h3></div>
+    <div class="row1"><button class="check ${t.status === 'done' ? 'on' : ''}" data-chk title="Mark ${t.status === 'done' ? 'as not done' : 'done'}">${t.status === 'done' ? I.check : ''}</button><h3 title="${esc(t.title)}">${esc(t.title)}</h3></div>
     ${t.description ? `<p>${esc(t.description)}</p>` : ''}
     ${subs.length ? `<div class="prog" title="${done}/${subs.length} subtasks"><i style="width:${pct}%"></i></div>` : layout() === 'list' ? '<div class="prog" style="opacity:0"></div>' : ''}
     <div class="meta"><span class="pill s-${t.status}">${STATUS[t.status]}</span>
       ${di ? `<span class="due ${di.cls}">${I.clock}${di.text}</span>` : ''}</div>
     <div class="foot">
-      ${subs.length ? `<span>${I.sub}${done}/${subs.length}</span>` : ''}
-      ${nf ? `<span>${I.clip}${nf}</span>` : ''}
-      <span class="r" title="Created automatically">${I.cal}${fmtDate(t.createdAt)}</span>
+      ${subs.length ? `<span class="f-subs">${I.sub}${done}/${subs.length}</span>` : ''}
+      ${nf ? `<span class="f-files">${I.clip}${nf}</span>` : ''}
+      <span class="r f-date" title="Created automatically">${I.cal}${fmtDate(t.createdAt)}</span>
     </div></div>`;
 }
 
@@ -338,10 +341,8 @@ function openNewTask() {
   const create = () => {
     const v = title.value.trim();
     if (!v) { title.focus(); title.style.borderColor = 'var(--danger)'; return; }
-    const t = {
-      id: uid(), title: v, description: '', status: $('#nt-status', m).value, priority: $('#nt-prio', m).value,
-      createdAt: now, dueDate: $('#nt-due', m).value || null, completedAt: null, subtasks: []
-    };
+    const t = { id: uid(), title: v, description: '', status: $('#nt-status', m).value, priority: $('#nt-prio', m).value,
+      createdAt: now, dueDate: $('#nt-due', m).value || null, completedAt: null, subtasks: [] };
     if (t.status === 'done') t.completedAt = now;
     data.tasks.push(t); save(); close(); render(); toast('Task created');
   };
@@ -589,7 +590,7 @@ function mountBrowser(el, o) {
     if (o.limit) {
       api.usage(o.root).then(u => {
         foot.innerHTML = `<div class="prog"><i style="width:${Math.min(100, u.bytes / o.limit * 100)}%"></i></div><span>${fmtSize(u.bytes)} of ${fmtSize(o.limit)} used · ${u.files} file${u.files === 1 ? '' : 's'} in total</span>`;
-      }).catch(() => { });
+      }).catch(() => {});
     } else foot.innerHTML = `<span>${nDirs} folder${nDirs === 1 ? '' : 's'}, ${nFiles} file${nFiles === 1 ? '' : 's'} here</span>`;
   }
 
@@ -728,8 +729,8 @@ function renderSettings() {
     const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
     const rows = [['Title', 'Status', 'Priority', 'Created', 'Due', 'Completed', 'Description', 'Subtasks (done/total)', 'Subtask list'].map(q).join(',')];
     data.tasks.forEach(t => rows.push([t.title, STATUS[t.status], PRIORITY[t.priority], t.createdAt, t.dueDate, t.completedAt, t.description,
-    `${(t.subtasks || []).filter(x => x.done).length}/${(t.subtasks || []).length}`,
-    (t.subtasks || []).map(x => `[${x.done ? 'x' : ' '}] ${x.title}${x.description ? ' – ' + x.description : ''}`).join('\n')].map(q).join(',')));
+      `${(t.subtasks || []).filter(x => x.done).length}/${(t.subtasks || []).length}`,
+      (t.subtasks || []).map(x => `[${x.done ? 'x' : ' '}] ${x.title}${x.description ? ' – ' + x.description : ''}`).join('\n')].map(q).join(',')));
     try { const p = await window.api.exportText('tasks.csv', '﻿' + rows.join('\r\n')); if (p) toast('Exported to ' + p); } catch (e) { toast(e.message, true); }
   };
 }
