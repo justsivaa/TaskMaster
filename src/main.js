@@ -15,8 +15,11 @@ let win;
 function createWindow() {
   win = new BrowserWindow({
     width: 1280, height: 820, minWidth: 900, minHeight: 600,
-    backgroundColor: '#0f1117',
+    backgroundColor: '#0a091b',
     title: 'Task Master',
+    // No icon or name in the title bar: only the minimise / maximise / close buttons remain (drawn over the page).
+    titleBarStyle: 'hidden',
+    titleBarOverlay: { color: '#0a091b', symbolColor: '#eeebff', height: 36 },
     icon: path.join(__dirname, 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -107,6 +110,9 @@ ipcMain.handle('fs:download', wrap(async (rel, isDir) => {
   return store.exportTo(rel, r.filePath);
 }));
 
+// Keeps the window buttons matching the theme (called from the page whenever the theme changes)
+ipcMain.handle('app:theme', wrap(async (bg, fg) => { try { win.setTitleBarOverlay({ color: bg, symbolColor: fg, height: 36 }); } catch {} }));
+
 ipcMain.handle('export:text', wrap(async (name, text) => {
   const r = await dialog.showSaveDialog(win, { defaultPath: path.join(app.getPath('downloads'), name) });
   if (r.canceled) return false;
@@ -114,5 +120,6 @@ ipcMain.handle('export:text', wrap(async (name, text) => {
   return r.filePath;
 }));
 
+app.setAppUserModelId('com.cosmic.taskmaster'); // lets Windows show the daily-reminder notifications under the app name
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => app.quit());

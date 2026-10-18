@@ -1,0 +1,116 @@
+/* ==========================================================================
+   POPUP  -  dialogs, the task popup, subtasks, notes and the file window.
+
+   Contents
+     1. Dialog frame (.overlay, .modal) and small dialogs
+     2. Task popup layout and property fields
+     3. Label input
+     4. Sections, subtasks and notes (notepad-style textarea)
+     5. File window (.fwin): used in the task popup and on the Files page
+   ========================================================================== */
+
+/* 1. Dialog frame --------------------------------------------------------------------- */
+.overlay { position: fixed; inset: 0; z-index: var(--z-overlay); display: grid; place-items: center; background: var(--scrim); backdrop-filter: blur(6px); animation: fade .16s; }
+.modal {
+  display: flex; flex-direction: column; width: min(580px, 94vw); max-height: 92vh;
+  background: var(--surface); border-radius: var(--r-sheet); box-shadow: var(--shadow-sheet); animation: rise .24s var(--ease);
+}
+.modal.sm { width: min(430px, 94vw); }
+.modal.wide { width: min(1240px, 96vw); height: min(90vh, 900px); }
+.modal-head { display: flex; align-items: center; gap: var(--sp-2); padding: 18px 20px 10px 22px; }
+.modal-head h3 { flex: 1; margin: 0; font: 700 var(--fs-xl)/1.2 var(--font-display); letter-spacing: -.02em; }
+.modal-body { display: grid; gap: var(--sp-4); padding: 8px 22px 18px; overflow: auto; }
+.modal-foot { display: flex; align-items: center; gap: 10px; padding: 14px 22px; border-top: 1px solid var(--line); }
+@keyframes fade { from { opacity: 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(10px) scale(.985); } }
+
+/* The task title is a big, borderless input until you hover or focus it */
+.title-input {
+  flex: 1; min-height: 44px; padding: 4px 10px; border-color: transparent; background: transparent;
+  font: 700 26px/1.2 var(--font-display); letter-spacing: -.025em;
+}
+.title-input:hover { background: var(--surface-2); border-color: transparent; }
+.title-input:focus { background: var(--surface-2); }
+
+/* 2. Task popup layout and property fields ------------------------------------------------- */
+/* Row 1: status, priority, due date, created (always one row). Row 2: repeat, labels. */
+.props { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-3); padding: 4px 22px 12px; }
+.props.two { grid-template-columns: 220px minmax(0, 1fr); padding-top: 0; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.modal:not(.wide) .props.two { border-bottom: 0; padding-bottom: 6px; }
+.props select, .props input { font-size: var(--fs-sm); }
+
+.pop-body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 20px; padding: 18px 22px; }
+.pop-left { display: grid; align-content: start; gap: 24px; min-height: 0; padding-right: 6px; overflow: auto; }
+@media (max-width: 900px) {
+  .pop-body { grid-template-columns: 1fr; grid-template-rows: none; overflow: auto; }
+  .pop-left { overflow: visible; }
+  .fwin { min-height: 380px; }
+  .props { grid-template-columns: 1fr 1fr; }
+  .props.two { grid-template-columns: 1fr; }
+}
+
+/* 3. Label input ----------------------------------------------------------------------------- */
+.lblin { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 36px; padding: 4px 8px; border: 1px solid var(--line); border-radius: var(--r-control); background: var(--surface-2); cursor: text; transition: border-color var(--t-fast), box-shadow var(--t-fast); }
+.lblin:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.lblin .lbl { height: 24px; padding-right: 3px; gap: 2px; max-width: none; }
+.lblin .lbl button { display: grid; place-items: center; width: 18px; height: 18px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: inherit; opacity: .7; }
+.lblin .lbl button:hover { opacity: 1; background: color-mix(in srgb, var(--c) 25%, transparent); }
+.lblin .lbl svg { width: 12px; height: 12px; }
+.lblin input { flex: 1; min-width: 110px; min-height: 26px; padding: 0 4px; border: 0; background: transparent; box-shadow: none; }
+.lblin input:focus { box-shadow: none; }
+
+/* 4. Sections, subtasks and notes ----------------------------------------------------------- */
+.sec h4 { display: flex; align-items: center; gap: var(--sp-2); margin: 0 0 10px; font: 600 var(--fs-lg)/1.2 var(--font-display); letter-spacing: -.01em; }
+.sec h4 .badge { padding: 1px 8px; border-radius: var(--r-chip); background: var(--surface-2); color: var(--text-2); font: 600 var(--fs-xs) var(--font-ui); }
+
+.sub { margin-bottom: var(--sp-2); padding: 6px 8px; border-radius: 12px; background: var(--surface-2); }
+.sub .r { display: flex; align-items: center; gap: var(--sp-2); }
+.sub .r input[type=text] { min-height: 32px; border-color: transparent; background: transparent; }
+.sub .r input[type=text]:hover { border-color: var(--line); }
+.sub .r input[type=text]:focus { background: var(--surface); border-color: var(--accent); }
+.sub.done .r input[type=text] { color: var(--text-3); text-decoration: line-through; }
+.add-row { display: flex; gap: var(--sp-2); }
+.detailsbtn { position: relative; flex: none; color: var(--text-2); }
+.detailsbtn.on { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 55%, transparent); color: var(--text); }
+.detailsbtn .dot { position: absolute; top: -3px; right: -3px; width: 9px; height: 9px; border: 2px solid var(--surface-2); border-radius: 50%; background: var(--accent); }
+
+/* Notepad-style text areas: no toolbar. Tab indents; "* " and "1. " start lists (see js/notepad.js). */
+textarea.notepad { min-height: 120px; resize: none; overflow-y: auto; font-size: var(--fs-md); line-height: 1.6; tab-size: 2; white-space: pre-wrap; background: var(--surface-2); }
+.sub textarea.notepad { min-height: 110px; margin-top: 6px; background: var(--surface); }
+#d-desc { min-height: 220px; }
+
+/* 5. File window ------------------------------------------------------------------------------ */
+.fwin { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; border-radius: var(--r-sheet); background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); }
+.fwin-bar { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--surface-3); }
+.dots { display: inline-flex; gap: 6px; }
+.dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line-strong); }
+.fwin-title { display: flex; align-items: center; gap: 7px; margin: 0 auto; padding-right: 44px; color: var(--text-2); font-size: var(--fs-sm); }
+.fwin-title svg { width: 15px; height: 15px; color: var(--spec-5); }
+.fwin-title b { color: var(--text); font-weight: 600; }
+.fwin-tools { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+.crumbs { display: flex; align-items: center; flex: 1; gap: 2px; min-width: 0; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+.crumbs::-webkit-scrollbar { display: none; }
+.crumb { padding: 4px 8px; border: 0; border-radius: 7px; background: transparent; color: var(--text-2); font-size: var(--fs-sm); }
+.crumb:last-child { color: var(--text); font-weight: 600; }
+.crumb:hover { background: var(--surface-3); color: var(--text); }
+.sep { color: var(--text-3); }
+.fwin-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+.fwin-list { flex: 1; min-height: 0; margin: 2px; padding: 6px; overflow: auto; border: 2px solid transparent; border-radius: 10px; }
+.frow { display: flex; align-items: center; gap: 11px; padding: 7px 9px; border: 1px solid transparent; border-radius: 10px; cursor: pointer; }
+.frow:hover { background: var(--surface-3); }
+.frow.dragging { opacity: .45; }
+.dropt { background: var(--accent-soft) !important; border-color: var(--accent) !important; }
+.ficon { display: grid; place-items: center; width: 36px; height: 36px; flex: none; }
+.frow.dir .ficon svg { width: 27px; height: 27px; color: var(--spec-5); fill: color-mix(in srgb, var(--spec-5) 22%, transparent); }
+.ext { display: grid; place-items: center; width: 36px; height: 36px; flex: none; border-radius: 9px; background: color-mix(in srgb, var(--c, var(--accent)) 18%, transparent); color: var(--c, var(--accent)); font-size: 10.5px; font-weight: 700; text-transform: uppercase; }
+.frow .nm { flex: 1; min-width: 0; }
+.frow .nm b { display: block; overflow: hidden; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.frow .nm small { color: var(--text-3); font-size: var(--fs-xs); }
+.frow .acts { display: flex; opacity: 0; transition: opacity var(--t-fast); }
+.frow:hover .acts, .frow:focus-within .acts { opacity: 1; }
+.chevr { color: var(--text-3); }
+.fempty { display: grid; justify-items: center; gap: 6px; padding: 44px 20px; color: var(--text-3); text-align: center; }
+.fempty svg { width: 44px; height: 44px; opacity: .5; }
+.fempty b { color: var(--text); }
+.fwin-foot { display: grid; gap: 6px; padding: 10px 14px; border-top: 1px solid var(--line); color: var(--text-3); font-size: var(--fs-xs); }
+.fwin-foot:empty { display: none; }

@@ -1,0 +1,169 @@
+/* ==========================================================================
+   BASE  -  reset, typography, and the small reusable parts used everywhere.
+   Nothing here is specific to one screen. Reads tokens.css only.
+
+   Contents
+     1. Reset and page
+     2. Typography helpers
+     3. Buttons  (.btn, .btn.primary, .btn.ghost, .btn.danger, .btn.sm, .icon-btn)
+     4. Form controls (input, select, textarea, field labels)
+     5. Chips and segmented control (.chip, .seg)
+     6. Label chips (.lbl) and keyboard keys (.kbd)
+     7. Status ring (.ring), priority bars (.prio), progress bar (.prog)
+     8. Misc (scrollbars, focus ring, reduced motion)
+   ========================================================================== */
+
+/* 1. Reset and page ---------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font: 400 var(--fs-md)/var(--lh-body) var(--font-ui);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+.hidden { display: none !important; }
+svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+::selection { background: var(--accent-soft); }
+
+/* 2. Typography helpers --------------------------------------------------------- */
+.display { font-family: var(--font-display); letter-spacing: -.015em; }
+.muted { color: var(--text-2); }
+.faint { color: var(--text-3); }
+.hint { color: var(--text-3); font-size: var(--fs-xs); }
+.grow { flex: 1; }
+.sp { flex: 1; }
+
+/* 3. Buttons --------------------------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  padding: 8px 14px; min-height: 36px;
+  border: 1px solid var(--line-strong); border-radius: var(--r-control);
+  background: var(--surface-2); color: var(--text); font-size: var(--fs-sm); font-weight: 500;
+  transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast);
+}
+.btn:hover { background: var(--surface-3); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary { background: var(--accent); border-color: transparent; color: var(--accent-ink); font-weight: 600; }
+.btn.primary:hover { background: color-mix(in srgb, var(--accent) 86%, white); }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--text-2); }
+.btn.ghost:hover { background: var(--surface-2); color: var(--text); }
+.btn.danger { color: var(--danger); }
+.btn.danger:hover { background: color-mix(in srgb, var(--danger) 14%, transparent); border-color: var(--danger); }
+.btn.sm { padding: 4px 10px; min-height: 30px; font-size: var(--fs-xs); border-radius: 8px; }
+.btn.sm svg { width: 15px; height: 15px; }
+.linkbtn { background: none; border: 0; color: var(--text-2); text-decoration: underline; text-underline-offset: 3px; padding: var(--sp-2); }
+.linkbtn:hover { color: var(--text); }
+
+.icon-btn {
+  display: inline-grid; place-items: center; width: 32px; height: 32px; flex: none;
+  border: 0; border-radius: 9px; background: transparent; color: var(--text-3);
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.icon-btn:hover { background: var(--surface-2); color: var(--text); }
+.icon-btn:disabled { opacity: .35; cursor: default; background: none; color: var(--text-3); }
+.icon-btn.danger:hover { color: var(--danger); }
+.icon-btn.on { color: #ffc84a; }                 /* the filled star */
+.icon-btn.on svg { fill: currentColor; }
+
+/* 4. Form controls ------------------------------------------------------------- */
+input[type=text], input[type=password], input[type=date], input[type=time], select, textarea {
+  width: 100%; min-height: 36px; padding: 7px 11px;
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--r-control);
+  color: var(--text); outline: none;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
+}
+input::placeholder, textarea::placeholder { color: var(--text-3); }
+input:hover, select:hover, textarea:hover { border-color: var(--line-strong); }
+input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+input:disabled { color: var(--text-2); opacity: .85; }
+textarea { resize: vertical; min-height: 90px; line-height: var(--lh-body); }
+select {
+  appearance: none; cursor: pointer; padding-right: 30px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a85b6' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 9px center; background-size: 15px;
+}
+select option { background: var(--surface); color: var(--text); }
+input[type=date]::-webkit-calendar-picker-indicator { opacity: .6; cursor: pointer; }
+.field > label, label.f { display: block; margin-bottom: 5px; color: var(--text-2); font-size: var(--fs-xs); font-weight: 500; }
+
+/* 5. Chips and segmented control --------------------------------------------------- */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 3px 11px;
+  border: 1px solid var(--line); border-radius: var(--r-chip); background: transparent;
+  color: var(--text-2); font-size: var(--fs-xs); font-weight: 500;
+  transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+.chip:hover { background: var(--surface-2); color: var(--text); }
+.chip.on { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 55%, transparent); color: var(--text); }
+.chip .x { width: 14px; height: 14px; }
+
+.seg { display: inline-flex; padding: 3px; gap: 2px; background: var(--surface-2); border-radius: var(--r-control); }
+.seg button {
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border: 0; border-radius: 8px;
+  background: transparent; color: var(--text-3); font-size: var(--fs-xs); font-weight: 500;
+}
+.seg button svg { width: 16px; height: 16px; }
+.seg button:hover { color: var(--text); }
+.seg button.on { background: var(--surface); color: var(--text); box-shadow: 0 1px 0 var(--line-strong), 0 6px 14px -8px rgba(0, 0, 0, .5); }
+
+/* 6. Label chips and keyboard keys ----------------------------------------------------- */
+/* A label's colour comes from .lb-1 ... .lb-8, picked by hashing the label name in JS (labelClass). */
+.lbl {
+  --c: var(--lb-1);
+  display: inline-flex; align-items: center; max-width: 120px; height: 22px; padding: 0 8px;
+  border-radius: var(--r-chip); background: color-mix(in srgb, var(--c) 17%, transparent);
+  color: var(--c); font-size: var(--fs-2xs); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lb-1 { --c: var(--lb-1); } .lb-2 { --c: var(--lb-2); } .lb-3 { --c: var(--lb-3); } .lb-4 { --c: var(--lb-4); }
+.lb-5 { --c: var(--lb-5); } .lb-6 { --c: var(--lb-6); } .lb-7 { --c: var(--lb-7); } .lb-8 { --c: var(--lb-8); }
+
+.kbd {
+  display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px;
+  border: 1px solid var(--line-strong); border-bottom-width: 2px; border-radius: 6px;
+  background: var(--surface-2); color: var(--text-2); font-size: var(--fs-2xs); font-weight: 600;
+}
+
+/* 7. Status ring, priority bars, progress bar --------------------------------------------- */
+/* The ring is the first control on every task. Click = mark done / not done. Its look shows the status. */
+.ring {
+  --rc: var(--st-todo);
+  position: relative; flex: none; width: 22px; height: 22px; padding: 0; border-radius: 50%;
+  border: 2px solid var(--rc); background: transparent; color: #fff; display: grid; place-items: center;
+  transition: transform var(--t-fast) var(--ease), background var(--t-fast), border-color var(--t-fast);
+}
+.ring:hover { transform: scale(1.12); border-color: var(--st-done); }
+.ring svg { width: 12px; height: 12px; stroke-width: 3.2; opacity: 0; transform: scale(.4); transition: opacity var(--t-fast), transform var(--t-med) var(--ease); }
+.ring[data-status="progress"] { --rc: var(--st-progress); padding: 3px; background: conic-gradient(var(--rc) 0 50%, transparent 0 100%) content-box; }
+.ring[data-status="hold"] { --rc: var(--st-hold); border-style: dashed; }
+.ring[data-status="done"] { --rc: var(--st-done); background: var(--st-done); }
+.ring[data-status="done"] svg { opacity: 1; transform: scale(1); }
+.ring.sm { width: 16px; height: 16px; border-width: 1.6px; }
+.ring.sm[data-status="done"] svg { width: 9px; height: 9px; }
+.ring.sm[data-status="progress"] { padding: 2px; }
+.ring-static { pointer-events: none; }
+
+/* Three little bars: 3 filled = high, 2 = medium, 1 = low */
+.prio { display: inline-flex; align-items: flex-end; gap: 2px; height: 14px; }
+.prio i { width: 3px; border-radius: 1px; background: var(--line-strong); }
+.prio i:nth-child(1) { height: 5px; } .prio i:nth-child(2) { height: 9px; } .prio i:nth-child(3) { height: 14px; }
+.prio[data-p="high"] i { background: var(--text); }
+.prio[data-p="medium"] i:nth-child(-n+2) { background: var(--text-2); }
+.prio[data-p="low"] i:nth-child(1) { background: var(--text-3); }
+
+.prog { height: 4px; border-radius: 4px; background: var(--surface-3); overflow: hidden; }
+.prog i { display: block; height: 100%; border-radius: 4px; background: var(--accent); transition: width var(--t-med) var(--ease); }
+
+/* 8. Misc -------------------------------------------------------------------------------- */
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-3); background-clip: content-box; border: 2px solid transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

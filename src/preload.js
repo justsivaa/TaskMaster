@@ -24,5 +24,6 @@ contextBridge.exposeInMainWorld('api', {
   pathForFile: f => webUtils.getPathForFile(f),
   open: rel => call('fs:open', rel),
   download: (rel, isDir) => call('fs:download', rel, isDir),
+  setTheme: (bg, fg) => call('app:theme', bg, fg),
   exportText: (name, text) => call('export:text', name, text)
 });

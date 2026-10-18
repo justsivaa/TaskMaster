@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "test": "node test/store.test.js",
+    "test": "node test/store.test.js && node test/parse.test.js",
     "dist:win": "electron-builder --win portable nsis",
     "dist:mac": "electron-builder --mac",
     "dist:linux": "electron-builder --linux AppImage"
@@ -49,7 +49,7 @@
     "afterPack": "build/afterPack.js"
   },
   "devDependencies": {
-    "electron": "^33.2.0",
+    "electron": "^33.4.11",
     "electron-builder": "^25.1.8",
     "resedit": "^3.1.0"
   }

@@ -1,0 +1,11 @@
+Bundled fonts
+=============
+
+Bricolage Grotesque  (bricolage-grotesque-latin-wght-normal.woff2)
+Instrument Sans      (instrument-sans-latin-wght-normal.woff2)
+
+Both families are licensed under the SIL Open Font License, Version 1.1.
+Full text: https://openfontlicense.org
+
+They are used here as unmodified web-font subsets (Latin, variable weight),
+packaged by Fontsource (https://fontsource.org).

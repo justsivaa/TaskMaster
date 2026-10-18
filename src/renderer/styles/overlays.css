@@ -1,0 +1,50 @@
+/* ==========================================================================
+   OVERLAYS  -  things that float above the app.
+
+   Contents
+     1. Command palette  (Ctrl+K)
+     2. Toasts (with Undo)
+     3. Startup and upgrade card (.lock)
+   ========================================================================== */
+
+/* 1. Command palette ----------------------------------------------------------------------- */
+.pal-wrap { position: fixed; inset: 0; z-index: var(--z-palette); display: grid; justify-items: center; align-items: start; padding-top: 13vh; background: var(--scrim); backdrop-filter: blur(6px); animation: fade .14s; }
+.pal { display: flex; flex-direction: column; width: min(640px, 92vw); max-height: 66vh; overflow: hidden; border-radius: var(--r-sheet); background: var(--surface); box-shadow: var(--shadow-sheet); animation: rise .2s var(--ease); }
+.pal-in { display: flex; align-items: center; gap: 12px; height: 60px; padding: 0 18px; border-bottom: 1px solid var(--line); }
+.pal-in svg { color: var(--text-3); }
+.pal-in input { flex: 1; height: 58px; padding: 0; border: 0; background: transparent; box-shadow: none; font: 500 var(--fs-lg) var(--font-ui); }
+.pal-in input:focus { box-shadow: none; }
+.pal-list { padding: 8px; overflow: auto; }
+.pal-group { padding: 10px 12px 4px; color: var(--text-3); font-size: var(--fs-xs); font-weight: 600; }
+.pal-item { display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; cursor: pointer; }
+.pal-item svg { color: var(--text-3); }
+.pal-item .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pal-item .t em { color: var(--accent); font-style: normal; font-weight: 600; }
+.pal-item.sel { background: var(--accent-soft); }
+.pal-item.sel svg { color: var(--text); }
+.pal-empty { padding: 28px 16px; color: var(--text-3); text-align: center; }
+.pal-foot { display: flex; align-items: center; gap: 14px; padding: 9px 16px; border-top: 1px solid var(--line); color: var(--text-3); font-size: var(--fs-xs); }
+.pal-foot span { display: inline-flex; align-items: center; gap: 6px; }
+
+/* 2. Toasts ----------------------------------------------------------------------------------- */
+/* Inverted on purpose (light on dark theme, dark on light theme) so they stand out from the page. */
+#toasts { position: fixed; left: 50%; bottom: 26px; z-index: var(--z-toast); display: grid; gap: var(--sp-2); justify-items: center; transform: translateX(-50%); pointer-events: none; }
+.toast {
+  display: flex; align-items: center; gap: 14px; max-width: min(560px, 92vw); padding: 10px 12px 10px 16px;
+  border-radius: 12px; background: var(--text); color: var(--bg); box-shadow: var(--shadow-pop);
+  font-size: var(--fs-sm); font-weight: 500; pointer-events: auto; animation: rise .22s var(--ease);
+}
+.toast.err { background: var(--danger); color: #fff; }
+.toast button { padding: 4px 10px; border: 0; border-radius: 7px; background: color-mix(in srgb, var(--bg) 14%, transparent); color: inherit; font-size: var(--fs-xs); font-weight: 700; }
+.toast button:hover { background: color-mix(in srgb, var(--bg) 26%, transparent); }
+
+/* 3. Startup and upgrade card ------------------------------------------------------------------ */
+.lock { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: var(--bg); }
+.lock-card { width: min(400px, 92vw); padding: 34px; border-radius: var(--r-sheet); background: var(--surface); box-shadow: var(--shadow-sheet); text-align: center; }
+.lock-card .logo { width: 72px; height: 72px; margin: 0 auto 14px; }
+.lock-card .logo img { width: 100%; height: 100%; display: block; }
+.lock-card h1 { margin: 0 0 6px; font: 700 26px/1.15 var(--font-display); letter-spacing: -.025em; }
+.lock-card p { margin: 0 0 20px; color: var(--text-2); }
+.lock-card .stack { display: grid; gap: var(--sp-3); text-align: left; }
+.lock-card .hint { text-align: left; }
+.err { min-height: 18px; margin-top: 10px; color: var(--danger); font-size: var(--fs-sm); text-align: center; }

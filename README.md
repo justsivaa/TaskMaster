@@ -52,21 +52,26 @@ It is built for one person on one computer: quick to open, nothing to sign up fo
 ## Features
 
 ### Task management
-- **Home page of pending tasks** in a modern **grid** or **list** layout
-- **Task fields:** heading, created date (filled in automatically), status, due date, priority
-- **Statuses:** To Do, In Progress, On Hold, Done
-- **Priority:** High, Medium, Low, shown as a colored edge on each card
-- **Due-date awareness:** "Due today", "Due tomorrow" and red "Overdue" labels
-- **Dashboard counters:** pending, due today, overdue, completed
-- **Search** across titles, descriptions and subtasks
-- **Filters and sorting** by status and priority; sort by due date, priority, newest or A-Z
-- **One-click complete** from the circle on any card
+- **Four views** of the same tasks: **List**, **Cards**, **Board** (kanban, drag a card to change its status) and **Calendar** (drag a task to reschedule it)
+- **Quick add:** type `Send report friday !high #finance` and press Enter. Dates (`tomorrow`, `next mon`, `oct 28`), priority (`!high`), labels (`#finance`) and repeats (`every week`) are understood, with a live preview
+- **Command palette (`Ctrl+K`):** search tasks, jump to any page or label, switch view or theme, or add a task
+- **Smart pages:** Today (due or overdue), Upcoming, Pending, Starred, Completed, All tasks
+- **Labels** with their own colour and a sidebar list, and **stars** for the tasks that matter
+- **Repeating tasks:** finish a repeating task and the next one is created automatically
+- **Undo** after completing, moving, adding or rescheduling a task
+- **15-day runway:** a strip of the next two weeks showing how much is due each day; click a day to filter
+- **Group by** due date, status, priority or label
+- **Duplicate** a task with its subtasks, **daily reminder** notification
+- **Task fields:** heading, created date (automatic), status, due date, priority, labels, repeat
+- **Deadline colours:** every task has a coloured edge and date chip that run from cool cyan (far away) to hot pink (today) and ember (overdue)
+- **Search, filters and sorting** by status, priority, due date, newest or A-Z
+- **One-click complete** from the ring on any task
 
 ### Task popup
 - **Status, priority, due date and created date** in a single row
 - **Description** with notepad-style editing (see below)
 - **Subtasks**, each with a done tick and a **Details** button that opens a notes area for that subtask
-- **Progress bar** on the card showing completed subtasks
+- **Labels, repeat and star** next to the other properties
 - **File window** on the right side of the popup (see below)
 - **Autosave:** changes are saved as you type
 
@@ -97,16 +102,18 @@ Every task has its own file window, shown as a small window on the right side of
 - A **Files** page in the sidebar shows everything in one place: a General area plus one folder per task
 
 ### Quality of life
-- Dark, light and match-system themes
-- Export your task list to CSV
-- Keyboard shortcuts
+- Dark, light and match-system themes, plus four accent colours
+- Export your task list to CSV (with labels and repeat)
+- Keyboard shortcuts, listed in Settings
 - Custom app icon
 
 ## Screenshots
 
 | | |
 | --- | --- |
-| **Grid view** <br> <img src="docs/screenshots/home-grid.png" width="440"> | **List view** <br> <img src="docs/screenshots/home-list.png" width="440"> |
+| **List view** <br> <img src="docs/screenshots/home-list.png" width="440"> | **Cards view** <br> <img src="docs/screenshots/home-grid.png" width="440"> |
+| **Board** <br> <img src="docs/screenshots/board.png" width="440"> | **Calendar** <br> <img src="docs/screenshots/calendar.png" width="440"> |
+| **Command palette** <br> <img src="docs/screenshots/palette.png" width="440"> | |
 | **Task popup with file window** <br> <img src="docs/screenshots/task-popup.png" width="440"> | **Files page** <br> <img src="docs/screenshots/files.png" width="440"> |
 | **Settings** <br> <img src="docs/screenshots/settings.png" width="440"> | **Light theme** <br> <img src="docs/screenshots/light-theme.png" width="440"> |
 
@@ -160,7 +167,7 @@ Notes for Windows:
 ```mermaid
 flowchart LR
   subgraph Renderer["Renderer (UI)"]
-    A[index.html / styles.css / app.js]
+    A[index.html / styles/ / js/ / app.js]
   end
   subgraph Preload["Preload bridge"]
     B[preload.js<br/>window.api]
@@ -276,12 +283,16 @@ task-master/
 │   ├── legacy.js         One-time upgrade from older encrypted versions
 │   ├── icon.png          Window and taskbar icon
 │   └── renderer/
-│       ├── index.html    App shell
-│       ├── styles.css    Styles and themes
-│       ├── app.js        UI: tasks, popup, file window, notepad editor
-│       └── logo.png      In-app logo
+│       ├── index.html    App shell: lists the stylesheets and scripts in load order
+│       ├── app.js        Start-up (loads data, then draws the app)
+│       ├── logo.png      In-app logo
+│       ├── fonts/        Bundled fonts (offline), see fonts/LICENSE.txt
+│       ├── styles/       All styling, split by area. Start with tokens.css
+│       └── js/           parse.js, core.js, notepad.js, files.js, tasks.js,
+│                         views.js, popup.js, palette.js, settings.js
 ├── test/
-│   └── store.test.js     Storage and upgrade tests
+│   ├── store.test.js     Storage and upgrade tests
+│   └── parse.test.js     Quick-add parser and repeat-date tests
 ├── package.json
 ├── .gitignore
 ├── LICENSE
@@ -296,8 +307,8 @@ task-master/
 | Data folder location | `dataDir` at the top of `src/main.js` |
 | App name, id and installer options | the `build` section of `package.json` |
 | App icon | replace the files in `build/` and `src/`, keeping the same names |
-| Colors and themes | CSS variables at the top of `src/renderer/styles.css` |
-| Notepad indent width | `IND` inside `attachNotepad` in `src/renderer/app.js` |
+| Colours, fonts, spacing, corners | the variables in `src/renderer/styles/tokens.css` (full guide: [docs/STYLING.md](docs/STYLING.md)) |
+| Notepad indent width | `IND` inside `attachNotepad` in `src/renderer/js/notepad.js` |
 
 To change the logo, replace `build/icon.png`, `build/icon.ico`, `src/icon.png` and `src/renderer/logo.png`. Use a square PNG of at least 512 by 512 pixels.
 

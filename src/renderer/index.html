@@ -5,13 +5,34 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Task Master</title>
-<link rel="stylesheet" href="styles.css">
+<!-- Styles: see the map at the top of styles/tokens.css. Order matters: tokens first, pages last. -->
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/layout.css">
+<link rel="stylesheet" href="styles/tasks.css">
+<link rel="stylesheet" href="styles/views.css">
+<link rel="stylesheet" href="styles/popup.css">
+<link rel="stylesheet" href="styles/overlays.css">
+<link rel="stylesheet" href="styles/pages.css">
 </head>
 <body>
+<div class="drag"></div>
+<div class="drag"></div>
 <div id="lock" class="lock hidden"></div>
 <div id="app" class="app hidden"></div>
 <div id="modal-root"></div>
 <div id="toasts"></div>
+<!-- Scripts: order matters (see the header of js/core.js). app.js starts everything. -->
+<script src="js/guard.js"></script>
+<script src="js/parse.js"></script>
+<script src="js/core.js"></script>
+<script src="js/notepad.js"></script>
+<script src="js/files.js"></script>
+<script src="js/tasks.js"></script>
+<script src="js/views.js"></script>
+<script src="js/popup.js"></script>
+<script src="js/palette.js"></script>
+<script src="js/settings.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

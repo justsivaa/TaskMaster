@@ -1,0 +1,197 @@
+/* ==========================================================================
+   TOKENS  -  every visual decision in Task Master lives in this file.
+   --------------------------------------------------------------------------
+   The other stylesheets contain no raw colours, sizes or fonts: they only read the
+   variables defined here. To re-theme the app you normally edit THIS FILE ONLY.
+
+   QUICK RECIPES
+   - Change the main colour ............ --accent (and the [data-accent] blocks at the bottom)
+   - Change the deadline colours ........ --u-over / --u-today / --u-soon / --u-week / --u-later
+   - Change fonts ....................... --font-display (titles) and --font-ui (everything else)
+   - Make the app tighter / looser ...... --row-h, --card-h, --content-pad, --sp-* spacing scale
+   - Make corners sharper / rounder ..... --r-chip, --r-control, --r-card, --r-sheet
+   - Change the sidebar width ........... --side-w
+   - Edit the light theme ............... the  :root[data-theme="light"]  block
+
+   STYLESHEET MAP (load order, see index.html)
+     tokens.css   this file: design tokens, fonts
+     base.css     reset, typography, buttons, inputs, chips, labels, kbd
+     layout.css   app shell: sidebar, page header, toolbar
+     tasks.css    quick add, runway, task rows (list) and task cards (grid)
+     views.css    board (kanban) and calendar
+     popup.css    modals, task popup, subtasks, notepad, file window
+     overlays.css command palette, toasts, startup/upgrade card
+     pages.css    Files page and Settings page
+
+   THE ONE BIG IDEA: the "deadline spectrum".
+   The five colours of the logo (cyan > blue > violet > pink > ember) are used as a heat scale for
+   deadlines. Far away is cool cyan; due today is hot pink; overdue is ember. Each task shows its
+   urgency as a coloured spine and a coloured date chip, and the 15-day runway uses the same scale.
+   ========================================================================== */
+
+/* ---- Fonts (bundled, so the app stays fully offline) ---------------------- */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("../fonts/bricolage-grotesque-latin-wght-normal.woff2") format("woff2");
+  font-weight: 200 800; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Instrument Sans";
+  src: url("../fonts/instrument-sans-latin-wght-normal.woff2") format("woff2");
+  font-weight: 400 700; font-style: normal; font-display: swap;
+}
+
+/* ---- Tokens that do not change between themes ------------------------------ */
+:root {
+  /* Type families */
+  --font-display: "Bricolage Grotesque", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif; /* page titles, task titles, big numbers */
+  --font-ui: "Instrument Sans", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;            /* everything else */
+
+  /* Type scale */
+  --fs-2xs: 11.5px;   /* tiny captions, runway labels */
+  --fs-xs: 12.5px;    /* chips, hints, meta text */
+  --fs-sm: 13.5px;    /* secondary text, controls */
+  --fs-md: 14.5px;    /* default body */
+  --fs-lg: 17px;      /* card titles, section titles */
+  --fs-xl: 22px;      /* dialog titles */
+  --fs-2xl: 36px;     /* page titles */
+  --lh-tight: 1.15;
+  --lh-body: 1.5;
+
+  /* Spacing scale (4px base). Use these instead of raw pixel values. */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px;  --sp-4: 16px;  --sp-5: 24px;  --sp-6: 32px;  --sp-7: 48px;
+
+  /* Corner radii, by role. Smaller things are squarer on purpose. */
+  --r-chip: 7px;       /* labels, date chips, kbd */
+  --r-control: 10px;   /* buttons, inputs, selects */
+  --r-card: 16px;      /* task cards, board columns, panels */
+  --r-sheet: 22px;     /* dialogs, the file window, the command palette */
+
+  /* Layout sizes */
+  --side-w: 268px;         /* sidebar width */
+  --content-pad: 32px;     /* left/right padding of the main area */
+  --row-h: 56px;           /* height of one row in List view */
+  --card-h: 212px;         /* height of one card in Grid view (all cards are the same height) */
+  --col-w: 292px;          /* minimum width of a Board column */
+
+  /* Motion */
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --t-fast: 120ms;
+  --t-med: 220ms;
+
+  /* Stacking order */
+  --z-overlay: 30;
+  --z-palette: 40;
+  --z-toast: 60;
+
+  /* The five logo colours. Constant in both themes; used for the logo-style accent stripe. */
+  --spec-1: #35d0ff;  --spec-2: #5b8cff;  --spec-3: #9a6bff;  --spec-4: #ff4fa3;  --spec-5: #ff7a45;
+  --spectrum: linear-gradient(90deg, var(--spec-1), var(--spec-2), var(--spec-3), var(--spec-4), var(--spec-5));
+}
+
+/* ---- Dark theme (default) --------------------------------------------------- */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surfaces: darkest at the back, lighter as things come forward */
+  --bg: #0a091b;            /* window background */
+  --bg-side: #0e0d25;       /* sidebar */
+  --surface: #14133a;       /* cards, panels, dialogs */
+  --surface-2: #1b1a47;     /* inputs, raised areas, column backgrounds */
+  --surface-3: #252358;     /* hover state on raised things */
+  --scrim: rgba(6, 5, 24, .64);   /* dim layer behind dialogs */
+
+  /* Lines */
+  --line: rgba(170, 160, 255, .13);          /* hairlines between things */
+  --line-strong: rgba(170, 160, 255, .26);   /* outlines of controls */
+
+  /* Text */
+  --text: #eeebff;          /* primary */
+  --text-2: #b6b1dd;        /* secondary */
+  --text-3: #8a85b6;        /* tertiary, placeholders */
+
+  /* Brand accent (primary buttons, focus, selection). Change via [data-accent] or here. */
+  --accent: #7c66ff;
+  --accent-ink: #ffffff;    /* text on top of --accent */
+  --accent-soft: color-mix(in srgb, var(--accent) 18%, transparent);
+  --focus: #b3a7ff;         /* keyboard focus ring */
+
+  /* Deadline spectrum (readable on dark surfaces) */
+  --u-over: #ff7a45;        /* overdue */
+  --u-today: #ff4fa3;       /* due today */
+  --u-soon: #a07bff;        /* tomorrow or the day after */
+  --u-week: #5b8cff;        /* within a week */
+  --u-later: #35d0ff;       /* later than that */
+  --u-none: #6b6694;        /* no due date */
+
+  /* Status colours */
+  --st-todo: #8a85b6;
+  --st-progress: #5b8cff;
+  --st-hold: #ffb454;
+  --st-done: #3ddc97;
+
+  --danger: #ff6b6b;
+
+  /* Label colours: a label is given one of these by hashing its name */
+  --lb-1: #5fd8ff; --lb-2: #7fa2ff; --lb-3: #b79cff; --lb-4: #ff7cc0;
+  --lb-5: #ffc268; --lb-6: #5ee6b0; --lb-7: #ff8f7a; --lb-8: #b8c4ee;
+
+  /* Shadows are tinted with the background hue, never plain grey */
+  --shadow-card: 0 14px 34px -20px rgba(3, 2, 28, .95);
+  --shadow-sheet: 0 40px 90px -30px rgba(3, 2, 28, .95), 0 0 0 1px var(--line);
+  --shadow-pop: 0 18px 44px -16px rgba(3, 2, 28, .9);
+}
+
+/* ---- Light theme ------------------------------------------------------------- */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f3f1fc;
+  --bg-side: #ebe8f8;
+  --surface: #ffffff;
+  --surface-2: #f2f0fb;
+  --surface-3: #e7e3f7;
+  --scrim: rgba(30, 24, 70, .38);
+
+  --line: rgba(60, 50, 140, .12);
+  --line-strong: rgba(60, 50, 140, .26);
+
+  --text: #1a1638;
+  --text-2: #4d4878;
+  --text-3: #6f6a9a;
+
+  --accent: #6a52f0;
+  --accent-ink: #ffffff;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
+  --focus: #6a52f0;
+
+  --u-over: #d4470e;
+  --u-today: #c81f78;
+  --u-soon: #7a3fe0;
+  --u-week: #2c5ae0;
+  --u-later: #057aa8;
+  --u-none: #8f8ab5;
+
+  --st-todo: #6f6a9a;
+  --st-progress: #2c5ae0;
+  --st-hold: #b87405;
+  --st-done: #0c9a5f;
+
+  --danger: #d92f3f;
+
+  --lb-1: #057aa8; --lb-2: #2c5ae0; --lb-3: #7a3fe0; --lb-4: #c81f78;
+  --lb-5: #9a6200; --lb-6: #0a8a5c; --lb-7: #c24a2c; --lb-8: #566096;
+
+  --shadow-card: 0 12px 28px -18px rgba(60, 40, 160, .35);
+  --shadow-sheet: 0 40px 90px -34px rgba(50, 30, 150, .5), 0 0 0 1px var(--line);
+  --shadow-pop: 0 18px 44px -18px rgba(50, 30, 150, .4);
+}
+
+/* ---- Accent colour choices (Settings > Accent). Add your own the same way. ---- */
+:root[data-accent="blue"]    { --accent: #3f74ff; }
+:root[data-accent="magenta"] { --accent: #d4338f; }
+:root[data-accent="emerald"] { --accent: #0e9f6e; }
+:root[data-theme="light"][data-accent="blue"]    { --accent: #2f62e8; }
+:root[data-theme="light"][data-accent="magenta"] { --accent: #c4237f; }
+:root[data-theme="light"][data-accent="emerald"] { --accent: #0b8a5f; }
